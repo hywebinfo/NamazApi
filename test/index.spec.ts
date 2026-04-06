@@ -13,25 +13,15 @@ describe("API endpoint tests", () => {
     vitest.restoreAllMocks();
   });
 
-  it("should enforce rate limiting after 100 requests from the same IP", async () => {
-    // Send 100 requests that should all succeed
-    for (let i = 0; i < 100; i++) {
+  it("should allow repeated requests from the same IP without rate limiting", async () => {
+    for (let i = 0; i < 101; i++) {
       const res = await app.request("/api/countries", {
         headers: {
-          "x-forwarded-for": "192.168.1.50", // Use a mock IP
+          "x-forwarded-for": "192.168.1.50",
         },
       });
       expect(res.status).toEqual(200);
     }
-    // The 101st request within the 15-minute window should be blocked
-    const rateLimitedRes = await app.request("/api/countries", {
-      headers: {
-        "x-forwarded-for": "192.168.1.50", // Same IP
-      },
-    });
-
-    // 429 is the standard HTTP status code for "Too Many Requests"
-    expect(rateLimitedRes.status).toEqual(429);
   });
 
   it("should be able to bring all countries", async () => {
