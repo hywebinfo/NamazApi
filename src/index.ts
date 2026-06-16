@@ -32,6 +32,7 @@ app.use(
 );
 
 app.get("/privacy-policy", getPrivacyPolicy);
+app.get("/privacy-policy-android", getPrivacyPolicyAndroid);
 app.get("/api/searchPlaces", searchPlaces);
 app.get("/api/nearByPlaces", nearByPlaces);
 app.get("/api/timesForGPS", getTimesForGPS);
