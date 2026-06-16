@@ -2,3 +2,9 @@ node_modules
 coverage
 .DS_Store
 .env
+
+# Yarn PnP (proje npm kullanıyor; bu dosyalar yanlışlıkla oluştu)
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+yarn.lock
