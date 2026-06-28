@@ -300,4 +300,14 @@ describe("API endpoint tests", () => {
     expect(res.status).toEqual(200);
     expect(await res.json()).toEqual(ANKARA_PLACE_DATA);
   });
+
+  it("should render the contact page html", async () => {
+    const res = await app.request("/iletisim");
+    expect(res.status).toEqual(200);
+    const htmlText = await res.text();
+    expect(htmlText).toContain("İletişim & Destek");
+    expect(htmlText).not.toContain("<a href=\"mailto:");
+    expect(htmlText).toContain("japhethturk@gmail.com");
+    expect(htmlText).not.toContain('class="email-link"');
+  });
 });

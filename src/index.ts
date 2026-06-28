@@ -33,6 +33,7 @@ app.use(
 
 app.get("/privacy-policy", getPrivacyPolicy);
 app.get("/privacy-policy-android", getPrivacyPolicyAndroid);
+app.get("/iletisim", getContactPage);
 app.get("/api/searchPlaces", searchPlaces);
 app.get("/api/nearByPlaces", nearByPlaces);
 app.get("/api/timesForGPS", getTimesForGPS);
@@ -267,8 +268,464 @@ function getIPAdress(c: Context) {
 }
 
 /**
- * Kuran Fihristi uygulaması için gizlilik politikası sayfası.
+ * Kuran Fihristi ve Namaz Vakti uygulaması için iletişim ve destek sayfası.
  */
+function getContactPage(c: Context) {
+  const html = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>İletişim & Destek</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-gradient-start: #0a1c18;
+    --bg-gradient-end: #040c0a;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --primary-color: #10b981;
+    --primary-hover: #059669;
+    --error-color: #ef4444;
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --success-color: #10b981;
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    overflow-x: hidden;
+  }
+
+  .background-blobs {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+  }
+
+  .blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: var(--primary-color);
+  }
+
+  .blob-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 45vw;
+    height: 45vw;
+    background: #0284c7;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 580px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .app-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(2, 132, 199, 0.2) 100%);
+    border: 1px solid var(--primary-color);
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .title {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .direct-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    font-size: 0.9rem;
+  }
+
+  .email-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .email-link:hover {
+    color: #34d399;
+    text-decoration: underline;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+  }
+
+  input:user-invalid,
+  textarea:user-invalid,
+  input.user-invalid-fallback,
+  textarea.user-invalid-fallback {
+    border-color: var(--error-color);
+    background-color: var(--error-bg);
+  }
+
+  input:user-valid,
+  textarea:user-valid {
+    border-color: var(--success-color);
+  }
+
+  .error-msg {
+    display: none;
+    color: var(--error-color);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    font-weight: 500;
+  }
+
+  input:user-invalid + .error-msg,
+  textarea:user-invalid + .error-msg,
+  input.user-invalid-fallback + .error-msg,
+  textarea.user-invalid-fallback + .error-msg {
+    display: block;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .success-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .success-card {
+    background: #0f2722;
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+
+  .success-overlay.active .success-card {
+    transform: scale(1);
+  }
+
+  .success-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .success-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .success-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+</style>
+</head>
+<body>
+
+<div class="background-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <div class="app-logo">N</div>
+      <h1 class="title">İletişim & Destek</h1>
+      <p class="subtitle">Herhangi bir sorunuz, öneriniz veya destek talebiniz için bizimle iletişime geçebilirsiniz.</p>
+    <form id="contactForm" novalidate>
+      <div class="form-group">
+        <label for="name">Adınız Soyadınız</label>
+        <div class="input-wrapper">
+          <input type="text" id="name" name="name" required placeholder="Örn. Ahmet Yılmaz">
+          <div class="error-msg">Lütfen adınızı ve soyadınızı girin.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-posta Adresiniz</label>
+        <div class="input-wrapper">
+          <input type="email" id="email" name="email" required placeholder="Örn. ahmet@example.com">
+          <div class="error-msg">Lütfen geçerli bir e-posta adresi girin.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Konu</label>
+        <div class="input-wrapper">
+          <input type="text" id="subject" name="subject" required placeholder="Örn. Destek Talebi">
+          <div class="error-msg">Lütfen bir konu başlığı girin.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Mesajınız</label>
+        <div class="input-wrapper">
+          <textarea id="message" name="message" required placeholder="Mesajınızı buraya yazın..."></textarea>
+          <div class="error-msg">Lütfen mesajınızı yazın.</div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span>Mesajı Gönder</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <h2 class="success-title">Mesajınız Hazır!</h2>
+    <p class="success-text">Mesajınız e-posta istemciniz aracılığıyla gönderilmek üzere hazırlandı. Lütfen açılan pencerede gönder butonuna tıklayarak işlemi tamamlayın.</p>
+    <button class="close-btn" id="closeOverlayBtn">Kapat</button>
+  </div>
+</div>
+
+<script>
+  const syncAria = (el) => {
+    el.setAttribute?.('aria-invalid', el.matches(':user-invalid') ? 'true' : 'false');
+  };
+
+  document.addEventListener('blur', (e) => syncAria(e.target), true);
+  document.addEventListener('input', (e) => {
+    if (e.target.hasAttribute('aria-invalid')) syncAria(e.target);
+  });
+
+  const form = document.getElementById('contactForm');
+  const successOverlay = document.getElementById('successOverlay');
+  const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    let isValid = true;
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      if (!input.checkValidity()) {
+        isValid = false;
+        input.setAttribute('aria-invalid', 'true');
+        input.classList.add('user-invalid-fallback');
+      }
+    });
+
+    if (isValid) {
+      const name = encodeURIComponent(document.getElementById('name').value);
+      const email = encodeURIComponent(document.getElementById('email').value);
+      const subject = encodeURIComponent(document.getElementById('subject').value);
+      const message = encodeURIComponent(document.getElementById('message').value);
+      
+      const body = \`Gönderen: \${name} <\${email}>\\n\\nMesaj:\\n\${message}\`;
+      const mailtoUrl = \`mailto:japhethturk@gmail.com?subject=\${subject}&body=\${encodeURIComponent(body)}\`;
+      
+      window.location.href = mailtoUrl;
+      successOverlay.classList.add('active');
+    }
+  });
+
+  closeOverlayBtn.addEventListener('click', () => {
+    successOverlay.classList.remove('active');
+    form.reset();
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      input.classList.remove('user-invalid-fallback');
+      input.removeAttribute('aria-invalid');
+    });
+  });
+</script>
+</body>
+</html>`;
+
+  return c.html(html);
+}
+
 function getPrivacyPolicy(c: Context) {
   const appName = "Kuran Fihristi";
   const lastUpdated = "17 Mayıs 2026";
@@ -423,7 +880,7 @@ function getPrivacyPolicy(c: Context) {
  */
 function getPrivacyPolicyAndroid(c: Context) {
   const lang = c.req.query("lang") === "en" ? "en" : "tr";
-  const email = "javadheybatzade@gmail.com";
+  const email = "japhethturk@gmail.com";
   const apiUrl = "https://vakit.vercel.app";
   const effectiveDate = "1 Kasım 2025";
 
